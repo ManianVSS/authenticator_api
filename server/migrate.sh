@@ -1,0 +1,5 @@
+#!/bin/bash
+
+python3 manage.py makemigrations authenticator
+python3 manage.py migrate
+

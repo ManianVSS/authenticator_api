@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export mode=production
+export DATABASE__NAME=authenticator
+export DATABASE__USER=authenticatoradmin
+export DATABASE__PASSWORD=authenticatoradmin@123
+export DATABASE__HOST=localhost
+export DATABASE__PORT=5432
+
+cd server
+python3 manage.py shell -c "from create_super_user import create_super_user; create_super_user()"
+cd ..

@@ -1,0 +1,22 @@
+#!/bin/bash
+export mode=production
+export DATABASE__NAME=authenticator
+export DATABASE__USER=authenticatoradmin
+export DATABASE__PASSWORD=authenticatoradmin@123
+export DATABASE__HOST=localhost
+export DATABASE__PORT=5432
+
+cd server
+python manage.py makemigrations api
+python manage.py makemigrations business
+python manage.py makemigrations siteconfig
+python manage.py makemigrations requirements
+python manage.py makemigrations workitems
+python manage.py makemigrations testdesign
+python manage.py makemigrations automation
+python manage.py makemigrations execution
+python manage.py makemigrations people
+python manage.py makemigrations program
+python manage.py migrate
+cd ..
+

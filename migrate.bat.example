@@ -1,0 +1,20 @@
+set mode=production
+set DATABASE__NAME=authenticator
+set DATABASE__USER=authenticatoradmin
+set DATABASE__PASSWORD=authenticatoradmin@123
+set DATABASE__HOST=localhost
+set DATABASE__PORT=5432
+
+cd server
+python manage.py makemigrations api
+python manage.py makemigrations business
+python manage.py makemigrations siteconfig
+python manage.py makemigrations requirements
+python manage.py makemigrations workitems
+python manage.py makemigrations testdesign
+python manage.py makemigrations automation
+python manage.py makemigrations execution
+python manage.py makemigrations people
+python manage.py makemigrations program
+python manage.py migrate
+cd ..

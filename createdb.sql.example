@@ -1,0 +1,3 @@
+create database authenticator;
+create user authenticatoradmin with encrypted password 'authenticatoradmin@123';
+grant all privileges on database authenticator to authenticatoradmin;
