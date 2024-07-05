@@ -15,5 +15,5 @@ move authenticator\migrations data\dbbackup\%fullstamp%
 
 move data\db.sqlite3 data\dbbackup\%fullstamp%
 
-migrate.bat
+call migrate.bat
 python manage.py shell -c "from create_super_user import create_super_user; create_super_user()"
