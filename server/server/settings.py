@@ -235,6 +235,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
     "access-control-allow-origin",
     "access-control-allow-methods",
+    "access-control-allow-credentials",
 ]
 
 CORS_ALLOW_METHODS = [
