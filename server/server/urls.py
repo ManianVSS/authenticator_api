@@ -22,6 +22,8 @@ from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 
+from rest_framework_simplejwt import views as jwt_views
+
 from . import settings
 
 schema_view = get_schema_view(title='Authenticator API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
@@ -31,6 +33,11 @@ urlpatterns = [
                   path('admin/', include('massadmin.urls')),
                   path('admin/', admin.site.urls),
                   # For Advanced filters path('advanced_filters/', include('advanced_filters.urls')),
+
+                  # Auth views
+                  path('auth/restframework', include('rest_framework.urls', namespace='rest_framework')),
+                  path('auth/jwt/login', jwt_views.TokenObtainPairView.as_view()),
+                  path('auth/jwt/refresh', jwt_views.TokenRefreshView.as_view()),
 
                   # Modules
                   path('authenticator/', include('authenticator.urls')),
