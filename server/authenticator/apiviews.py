@@ -1,3 +1,5 @@
+import time
+
 import pyotp
 from django.http import HttpResponse
 from rest_framework import status
@@ -6,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Secret
-from .serializers import SecretSerializer
 
 
 @api_view(['GET'])
@@ -27,6 +28,10 @@ def generate_totp(request):
         return HttpResponse(status=status.HTTP_404_NOT_FOUND, content='Could not find authenticator secret passed')
 
     otp_object = pyotp.parse_uri(authenticator_secret.url)
-    return_object = {'otp': otp_object.now()}
-    # SecretSerializer(authenticator_secret).data
+    seconds_remaining = 30 - int(time.strftime("%s", time.localtime())) % 30
+
+    return_object = {
+        'otp': otp_object.now(),
+        'validity_in_seconds': seconds_remaining
+    }
     return Response(return_object)
