@@ -27,6 +27,6 @@ def generate_totp(request):
         return HttpResponse(status=status.HTTP_404_NOT_FOUND, content='Could not find authenticator secret passed')
 
     otp_object = pyotp.parse_uri(authenticator_secret.url)
-    return_object = SecretSerializer(authenticator_secret).data
-    return_object['otp'] = otp_object.now()
+    return_object = {'otp': otp_object.now()}
+    # SecretSerializer(authenticator_secret).data
     return Response(return_object)
