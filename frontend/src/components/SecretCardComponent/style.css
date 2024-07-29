@@ -1,0 +1,9 @@
+.secret-card {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.secret-card:hover {
+  border: 2px solid #198754;
+  border-radius: 10px;
+}
