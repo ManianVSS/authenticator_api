@@ -1,53 +1,78 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Modal, Row, Table } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Modal,
+  OverlayTrigger,
+  Popover,
+  Row,
+  Table,
+} from "react-bootstrap";
 import "./style.css";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import CountDownTimerComponent from "../CountDownTimerComponent";
+import { useAlert } from "react-alert";
 import { axiosClient } from "../../hooks/api";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import { CiMenuKebab } from "react-icons/ci";
 
 const SecretCardComponent = (props) => {
   const [show, setShow] = useState(false);
-  const [otp, setOtp] = useState(null);
-  const [otpValidity, setOtpValidity] = useState(0);
-  const [timerComponent, setTimerComponent] = useState(<></>);
+  const alert = useAlert();
   const handleClose = () => {
     setShow(false);
   };
 
   const handleShow = () => {
     setShow(true);
-    getOTP();
   };
-  const getOTP = () => {
+
+  const deleteSecret = () => {
     axiosClient({
-      method: "get",
-      url:
-        "/authenticator/api/generate_totp?authenticator_secret=" +
-        props.data.id,
+      method: "delete",
+      url: "/authenticator/api/secrets/" + props.data.id + "/",
       headers: {
         authorization: "Bearer " + window.localStorage.getItem("accessToken"),
       },
     })
       .then(function (response) {
-        setOtp(response.data.otp);
-        setOtpValidity(response.data.validity_in_seconds);
-
-        setTimerComponent(
-          <CountDownTimerComponent
-            id={props.data.id}
-            otp={response.data.otp}
-            validity={response.data.validity_in_seconds}
-          />
-        );
+        //handle success
+        alert.success("Secret deleted successfully");
+        props.getSecrets();
       })
       .catch(function (response) {
-        alert.error("Failed to fetch OTP");
+        //handle error
+        alert.error("Failed to delete the secret");
+        // console.error(response);
       });
   };
 
-  useEffect(() => {
-    getOTP();
-  }, []);
+  const confirmDeleteSecret = () => {
+    handleClose();
+    confirmAlert({
+      title: "Delete Secret",
+      message:
+        "Are you sure to delete the secret with details ISSUER " +
+        props.data.issuer +
+        " & USER " +
+        props.data.user +
+        "?",
+      buttons: [
+        {
+          label: "I Confirm",
+          onClick: () => deleteSecret(),
+        },
+        {
+          label: "No",
+          // onClick: () => alert("Click No")
+        },
+      ],
+    });
+  };
+
   return (
     <>
       <Modal show={show} onHide={handleClose} centered size="lg">
@@ -96,44 +121,124 @@ const SecretCardComponent = (props) => {
               alignItems: "center",
             }}
           >
-            {/* <CountDownTimerComponent
-              id={props.data.id}
-              otp={otp}
-              validity={otpValidity}
-              getOtp={getOTP}
-            /> */}
-            {timerComponent}
+            <CountDownTimerComponent id={props.data.id} />
           </div>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="danger" onClick={confirmDeleteSecret}>
+            Delete Secret
+          </Button>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className="secret-card" onClick={handleShow}>
-        <Card border="success" style={{ width: "25rem" }}>
-          {/* <Card.Header>Header</Card.Header> */}
-          <Card.Body>
-            <Card.Title>
-              <Row className="justify-content-md-center">
-                <Col xs lg="4" style={{ margin: "auto" }}>
-                  <div>{props.data.issuer}</div>
-                </Col>
-                <Col md="auto" style={{ margin: "auto" }}>
-                  <FaArrowAltCircleRight />
-                </Col>
-                <Col xs lg="4" style={{ margin: "auto" }}>
-                  <div>{props.data.user}</div>
-                </Col>
-              </Row>
-            </Card.Title>
-            {/* <Card.Text>
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </Card.Text> */}
-          </Card.Body>
-        </Card>
+
+      <div className="secret-card">
+        {/* <div className="secret-card" onClick={handleShow}> */}
+        <Container>
+          <Row>
+            <Col style={{ textAlign: "center", margin: "auto" }}>
+              <div>
+                <div
+                  style={{
+                    border: "1px solid #404040",
+                    borderRadius: "10px",
+                    color: "white",
+                    backgroundColor: "#404040",
+                  }}
+                >
+                  Issuer
+                </div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    border: "1px solid #404040",
+                    borderRadius: "10px",
+                    marginTop: "2px",
+                  }}
+                >
+                  {props.data.issuer}
+                </div>
+              </div>
+            </Col>
+            <Col style={{ textAlign: "center", margin: "auto" }}>
+              <div>
+                <div
+                  style={{
+                    border: "1px solid #404040",
+                    borderRadius: "10px",
+                    color: "white",
+                    backgroundColor: "#404040",
+                  }}
+                >
+                  User
+                </div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    border: "1px solid #404040",
+                    borderRadius: "10px",
+                    marginTop: "2px",
+                  }}
+                >
+                  {props.data.user}
+                </div>
+              </div>
+            </Col>
+            <Col>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingTop: "2px",
+                  paddingBottom: "2px",
+                }}
+              >
+                <CountDownTimerComponent id={props.data.id} />
+              </div>
+            </Col>
+            <Col
+              md="auto"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <OverlayTrigger
+                trigger="click"
+                key="top"
+                placement="top"
+                rootClose={true}
+                overlay={
+                  <Popover id={`popover-positioned-top`}>
+                    {/* <Popover.Header as="h3"></Popover.Header> */}
+                    <Popover.Body>
+                      <Button
+                        variant="outline-danger"
+                        onClick={confirmDeleteSecret}
+                      >
+                        Delete
+                      </Button>
+                    </Popover.Body>
+                  </Popover>
+                }
+              >
+                <div>
+                  <CiMenuKebab
+                    style={{
+                      fontSize: "25px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
+              </OverlayTrigger>
+            </Col>
+          </Row>
+        </Container>
       </div>
     </>
   );

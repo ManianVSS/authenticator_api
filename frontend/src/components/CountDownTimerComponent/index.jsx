@@ -4,16 +4,16 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { axiosClient } from "../../hooks/api";
 
 const CountDownTimerComponent = (props) => {
-  const [key, setKey] = useState(props.validity);
-  const [otp, setOtp] = useState(props.otp);
-  const [otpValidity, setOtpValidity] = useState(props.validity);
+  const [key, setKey] = useState(0);
+  const [otp, setOtp] = useState(null);
+  const [otpValidity, setOtpValidity] = useState(null);
 
   const renderTime = ({ remainingTime }) => {
     // if (remainingTime === 0) {
     //   return <div className="timer">Too lale...</div>;
     // }
 
-    return <h1 style={{ fontWeight: "bold", fontSize: "24px" }}>{otp}</h1>;
+    return <h1 style={{ fontWeight: "bold", fontSize: "18px" }}>{otp}</h1>;
   };
   const getOTP = () => {
     axiosClient({
@@ -26,28 +26,34 @@ const CountDownTimerComponent = (props) => {
       .then(function (response) {
         setOtp(response.data.otp);
         setOtpValidity(response.data.validity_in_seconds);
-        console.log(response.data);
+        setKey(response.data.validity_in_seconds);
       })
       .catch(function (response) {
         alert.error("Failed to fetch OTP");
       });
   };
+  useEffect(() => {
+    getOTP();
+  }, []);
+
   return (
-    <div>
-      <CountdownCircleTimer
-        key={otpValidity}
-        isPlaying
-        duration={otpValidity}
-        colors={["#00cc44", "#ffcc00", "#ff8566", "#ff3300"]}
-        colorsTime={[10, 7, 4, 0]}
-        // children={childComp}
-        onComplete={() => setKey((prevKey) => getOTP())}
-      >
-        {/* {({ remainingTime }) => remainingTime} */}
-        {/* {({ remainingTime }) => props.otp} */}
-        {renderTime}
-      </CountdownCircleTimer>
-    </div>
+    <CountdownCircleTimer
+      key={key}
+      isPlaying
+      duration={otpValidity}
+      colors={["#00cc44", "#ffcc00", "#ff8566", "#ff3300"]}
+      colorsTime={[10, 7, 4, 0]}
+      // children={childComp}
+      size={80}
+      strokeWidth={5}
+      onComplete={() => {
+        getOTP();
+        setKey((prevKey) => prevKey + 1);
+      }}
+    >
+      {/* {({ remainingTime }) => remainingTime} */}
+      {renderTime}
+    </CountdownCircleTimer>
   );
 };
 

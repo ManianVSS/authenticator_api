@@ -15,6 +15,7 @@ import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "react-alert";
 import { axiosClient } from "../../hooks/api";
+import loginImage from "../../assets/images/auth_login.svg";
 
 function Login() {
   const alert = useAlert();
@@ -35,6 +36,7 @@ function Login() {
           userName: userName,
         });
         window.localStorage.setItem("accessToken", response.data.access);
+        window.localStorage.setItem("refreshToken", response.data.refresh);
         window.localStorage.setItem("user", userName);
 
         // axiosClient
@@ -81,7 +83,7 @@ function Login() {
         <MDBRow className="g-0">
           <MDBCol md="6">
             <MDBCardImage
-              src="/static/images/testportal_login.svg"
+              src={loginImage}
               alt="login form"
               className="rounded-start w-100"
             />

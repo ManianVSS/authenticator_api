@@ -96,15 +96,15 @@ const Home = () => {
         <FloatingButtonComponent onClickEvent={handleShow} />
       </div>
       <Container>
-        <Row className="justify-content-md-center">
+        <Col className="justify-content-md-center">
           {secrets.map((item) => {
             return (
-              <Col md="auto" key={item.id}>
-                <SecretCardComponent data={item} />
-              </Col>
+              <Row md="auto" key={item.id} style={{ marginBottom: "10px" }}>
+                <SecretCardComponent data={item} getSecrets={getSecrets} />
+              </Row>
             );
           })}
-        </Row>
+        </Col>
       </Container>
     </div>
   );

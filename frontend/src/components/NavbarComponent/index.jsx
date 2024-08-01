@@ -14,6 +14,7 @@ const NavbarComponent = () => {
   const [auth, setAuth] = useRecoilState(authState);
   const logout = () => {
     window.localStorage.setItem("accessToken", "");
+    window.localStorage.setItem("refreshToken", "");
     window.localStorage.setItem("user", "");
     navigate(`/login`);
     setAuth({
