@@ -3,8 +3,10 @@ import io
 import cv2
 import pyotp
 import qrcode
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -15,6 +17,7 @@ from authenticator.storage import CustomFileSystemStorage
 
 
 class Secret(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='secret owner')
     user = models.CharField(max_length=256, null=True, blank=True)
     secret = models.CharField(max_length=256, null=True, blank=True)
     issuer = models.CharField(max_length=256, null=True, blank=True)
@@ -24,6 +27,22 @@ class Secret(models.Model):
     initialized = models.BooleanField(default=False, verbose_name='is already initialized')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def can_access(self, user):
+        return (user is not None) and (self.owner == user)
+
+    def get_list_query_set(self, user):
+        if user is None:
+            return self.objects.none()
+
+        user_id = user.id
+
+        if user.is_superuser:
+            return self.objects.all()
+        elif user.is_anonymous:
+            return self.objects.none()
+        else:
+            return self.objects.filter(Q(owner__pk=user_id)).distinct()
 
 
 def parse_qr_code(instance):
@@ -37,11 +56,11 @@ def parse_qr_code(instance):
 
 
 def parse_secret_fields(instance, otp_object):
-    if instance.user is None:
+    if not instance.user:
         instance.user = otp_object.name
-    if instance.secret is None:
+    if not instance.secret:
         instance.secret = otp_object.secret
-    if instance.issuer is None:
+    if not instance.issuer:
         instance.issuer = otp_object.issuer
 
 
@@ -64,7 +83,7 @@ def update_secrets(sender, instance, **kwargs):
                     parse_secret_fields(instance, otp_object)
                     instance.initialized = True
                     instance.save()
-            elif instance.url is not None:
+            elif instance.url:
                 otp_object = pyotp.parse_uri(instance.url)
                 parse_secret_fields(instance, otp_object)
                 create_qr_code(instance)
