@@ -15,25 +15,26 @@ from .views import IsObjectOwner
 @permission_classes((IsObjectOwner,))
 def generate_totp(request):
     if not request.method == 'GET':
-        return HttpResponse(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     if (request.user is None) or request.user.is_anonymous:
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED, content='Not an authenticated user')
+        return Response(status=status.HTTP_401_UNAUTHORIZED, data={'detail': 'Not an authenticated user'})
 
     authenticator_secret_id = None
     if 'authenticator_secret' in request.GET:
         authenticator_secret_id = request.query_params.get('authenticator_secret')
     else:
-        return HttpResponse(status=status.HTTP_400_BAD_REQUEST, content='Missing parameter authenticator_secret')
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Missing parameter authenticator_secret'})
 
     try:
         authenticator_secret = Secret.objects.get(
             pk=authenticator_secret_id) if authenticator_secret_id else None
     except Secret.DoesNotExist:
-        return HttpResponse(status=status.HTTP_404_NOT_FOUND, content='Could not find authenticator secret passed')
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'detail': 'Could not find authenticator secret passed'})
 
     if not authenticator_secret.can_access(request.user):
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED, content='This secret does not seem to belong to you')
+        return Response(status=status.HTTP_401_UNAUTHORIZED,
+                        data={'detail': 'This secret does not seem to belong to you'}, )
 
     otp_object = pyotp.parse_uri(authenticator_secret.url)
     seconds_remaining = 30 - int(time.strftime("%s", time.localtime())) % 30
