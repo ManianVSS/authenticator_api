@@ -40,6 +40,7 @@ def generate_totp(request):
     # noinspection PyUnresolvedReferences
     return_object = {
         'otp': otp_object.now(),
-        'validity_in_seconds': seconds_remaining
+        'validity_in_seconds': seconds_remaining,
+        'period': otp_object.interval
     }
     return Response(return_object)
