@@ -1,5 +1,5 @@
 
-![Logo](https://namma-authenticator.s3.ap-southeast-2.amazonaws.com/Namma+Authenticator.png)
+![Logo](./NammaAuthenticator.png)
 # Namma Authenticator
 
 Namma Authenticator is an open-source web application designed to empower users with their own hosted authenticator app. This application provides a secure platform for generating time-based one-time passwords (OTPs) essential for two-factor authentication (2FA). Users can easily add secrets by uploading QR codes, streamlining the process of setting up 2FA for various services.
@@ -13,7 +13,7 @@ By offering a self-hosted solution, Namma Authenticator ensures users have compl
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[BSD 3-Clause License](./LICENSE)
 
 
 ## Installation
@@ -56,7 +56,7 @@ For windows
 Once the application is deployed successfully. Launch below URL on the browser to run the application
 
 ```http
-  http://<serverip>
+  http://<serverip>:8000/
 ```
 You can add Secrets by uploading the QR code and get OTP for multifactor authentication of your apps.
 
@@ -71,3 +71,5 @@ To automate your multifactor workflow, you can make use of API which will give y
 ```http
   http://<serverip>:8000/swagger
 ```
+
+Edit the runserver.sh for changing server port and dabatabse properties.
