@@ -7,6 +7,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { useRecoilState } from "recoil";
 import { authState } from "../../state/authData";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/images/NammaAuthenticator.png";
 
 const NavbarComponent = () => {
   const navigate = useNavigate();
@@ -27,7 +28,18 @@ const NavbarComponent = () => {
   return (
     <div>
       <Navbar bg="dark" data-bs-theme="dark">
-        <Navbar.Brand href="#home" style={{ marginLeft: "10px" }}>
+        <Navbar.Brand href="/" style={{ marginLeft: "10px", display: "flex" }}>
+          <img
+            src={logo}
+            alt="Logo"
+            width="25px"
+            height="25px"
+            style={{
+              marginRight: "10px",
+              borderRadius: "8px",
+              objectFit: "contain",
+            }}
+          />
           Namma Authenticator
         </Navbar.Brand>
         <Nav className="me-auto">

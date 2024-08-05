@@ -7,6 +7,7 @@ const CountDownTimerComponent = (props) => {
   const [key, setKey] = useState(0);
   const [otp, setOtp] = useState(null);
   const [otpValidity, setOtpValidity] = useState(null);
+  const [otpPeriod, setOtpPeriod] = useState(null);
 
   const renderTime = ({ remainingTime }) => {
     // if (remainingTime === 0) {
@@ -27,6 +28,7 @@ const CountDownTimerComponent = (props) => {
         setOtp(response.data.otp);
         setOtpValidity(response.data.validity_in_seconds);
         setKey(response.data.validity_in_seconds);
+        setOtpPeriod(response.data.period);
       })
       .catch(function (response) {
         alert.error("Failed to fetch OTP");
@@ -40,7 +42,8 @@ const CountDownTimerComponent = (props) => {
     <CountdownCircleTimer
       key={key}
       isPlaying
-      duration={otpValidity}
+      duration={otpPeriod}
+      initialRemainingTime={otpValidity}
       colors={["#00cc44", "#ffcc00", "#ff8566", "#ff3300"]}
       colorsTime={[10, 7, 4, 0]}
       // children={childComp}
